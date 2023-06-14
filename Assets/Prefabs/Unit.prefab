@@ -410,6 +410,7 @@ GameObject:
   - component: {fileID: 8688565114365535924}
   - component: {fileID: 2469991601806515539}
   - component: {fileID: 630951729548360009}
+  - component: {fileID: 902879069810335267}
   m_Layer: 7
   m_Name: Unit
   m_TagString: Untagged
@@ -447,7 +448,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08ad9e4daef92174aa7ff1e2118cf94f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxActionPoints: 2
+  maxActionPoints: 6
   isEnemy: 0
 --- !u!65 &5071937787143484448
 BoxCollider:
@@ -545,7 +546,7 @@ MonoBehaviour:
   maxShootingRange: 7
   obstacleLayerMask:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 320
 --- !u!114 &3107831346639571752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -597,6 +598,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57d4920510d2dbb40ac55690c244b284, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &902879069810335267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 536669621499382538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8deb4f3308dc4784c8a4adc745d1d1d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dynamicFloorPosition: 1
+  ignoreRenderer:
+  - {fileID: 1619882037754797370}
 --- !u!1 &1103429447953413669
 GameObject:
   m_ObjectHideFlags: 0

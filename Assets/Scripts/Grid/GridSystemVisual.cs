@@ -5,7 +5,6 @@ using UnityEngine;
 
 public class GridSystemVisual : MonoBehaviour
 {
-
     public static GridSystemVisual Instance { get; private set; }
 
     [Serializable]
@@ -26,7 +25,7 @@ public class GridSystemVisual : MonoBehaviour
     [SerializeField] private Transform gridSystemVisualSinglePrefab;
     [SerializeField] private List<GridVisualTypeMaterial> gridVisualTypeMaterialList;
     
-    private GridSystemVisualSingle[,] gridSystemVisualSingleArray;
+    private GridSystemVisualSingle[,,] gridSystemVisualSingleArray;
 
     private void Awake() 
     {
@@ -40,19 +39,28 @@ public class GridSystemVisual : MonoBehaviour
 
     private void Start()
     {
-        gridSystemVisualSingleArray = new GridSystemVisualSingle[LevelGrid.Instance.GetWidth(), LevelGrid.Instance.GetHeight()];
+        gridSystemVisualSingleArray = new GridSystemVisualSingle[
+            LevelGrid.Instance.GetWidth(),
+            LevelGrid.Instance.GetHeight(),
+            LevelGrid.Instance.GetFloorCount()
+        ];
         for (int x = 0; x < LevelGrid.Instance.GetWidth(); x++)
         {
             for (int z = 0; z < LevelGrid.Instance.GetHeight(); z++)
             {
-                GridPosition gridPosition = new GridPosition(x, z); 
-                GridSystemVisualSingle visualSingle = Instantiate(gridSystemVisualSinglePrefab, LevelGrid.Instance.GetWorldPosition(gridPosition), Quaternion.identity).GetComponent<GridSystemVisualSingle>();
-                gridSystemVisualSingleArray[x, z] = visualSingle;
+                for (int floor = 0; floor < LevelGrid.Instance.GetFloorCount(); floor++)
+                {
+                    GridPosition gridPosition = new GridPosition(x, z, floor); 
+                    GridSystemVisualSingle visualSingle = Instantiate(gridSystemVisualSinglePrefab, LevelGrid.Instance.GetWorldPosition(gridPosition), Quaternion.identity).GetComponent<GridSystemVisualSingle>();
+                    gridSystemVisualSingleArray[x, z, floor] = visualSingle;
+                }
             }
         }
 
         UnitActionSystem.Instance.OnSelectedActionChange += UnitActionSystem_OnSelectedActionChange;
-        LevelGrid.Instance.OnAnyUnitMovedGridPosition += LevelGrid_OnAnyUnitMoved;
+        UnitActionSystem.Instance.OnBusyChanged += UnitActionSystem_OnBusyChanged;
+        // LevelGrid.Instance.OnAnyUnitMovedGridPosition += LevelGrid_OnAnyUnitMoved;
+
         Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
 
         UpdateGridVisual();
@@ -64,7 +72,10 @@ public class GridSystemVisual : MonoBehaviour
         {
             for (int z = 0; z < LevelGrid.Instance.GetHeight(); z++)
             {
-                gridSystemVisualSingleArray[x, z].Hide();
+                for (int floor = 0; floor < LevelGrid.Instance.GetFloorCount(); floor++)
+                {
+                    gridSystemVisualSingleArray[x, z, floor].Hide();
+                }
             }
         }
     }
@@ -77,7 +88,7 @@ public class GridSystemVisual : MonoBehaviour
         {
             for (int z = -range; z <= range; z++)
             {
-                GridPosition testGridPosition = gridPosition + new GridPosition(x,z);
+                GridPosition testGridPosition = gridPosition + new GridPosition(x, z, 0);
 
                 if (!LevelGrid.Instance.IsValidGridPosition(testGridPosition))
                 {
@@ -100,7 +111,7 @@ public class GridSystemVisual : MonoBehaviour
     {
         foreach(GridPosition gridPosition in gridPositions)
         {
-            gridSystemVisualSingleArray[gridPosition.x, gridPosition.z].Show(GetGridVisualTypeMaterial(gridVisualType));
+            gridSystemVisualSingleArray[gridPosition.x, gridPosition.z, gridPosition.floor].Show(GetGridVisualTypeMaterial(gridVisualType));
         }
     }
 
@@ -146,6 +157,11 @@ public class GridSystemVisual : MonoBehaviour
     }
 
     private void LevelGrid_OnAnyUnitMoved(object sender, EventArgs e)
+    {
+        UpdateGridVisual();
+    }
+
+    private void UnitActionSystem_OnBusyChanged(object sender, bool busy)
     {
         UpdateGridVisual();
     }

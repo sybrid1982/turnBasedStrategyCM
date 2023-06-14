@@ -31,6 +31,7 @@ public class ShootAction : BaseAction
 
     [SerializeField] private int maxShootingRange = 7;
     [SerializeField] private LayerMask obstacleLayerMask;
+    
 
     void Update()
     {
@@ -167,9 +168,10 @@ public class ShootAction : BaseAction
     private void TurnTowardsTargetUnit()
     {
         Vector3 aimDirection = (targetUnit.GetWorldPosition() - unit.GetWorldPosition()).normalized;
+        aimDirection.y = 0f;
 
         float rotateSpeed = 10f;
-        transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * rotateSpeed);
+        transform.forward = Vector3.Slerp(transform.forward, aimDirection, Time.deltaTime * rotateSpeed);
     }
 
     public Unit GetTargetUnit()

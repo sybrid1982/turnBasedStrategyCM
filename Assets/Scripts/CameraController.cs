@@ -6,8 +6,15 @@ using Cinemachine;
 public class CameraController : MonoBehaviour
 {
     private const float MIN_FOLLOW_Y_OFFSET = 2f;
-    private const float MAX_FOLLOW_Y_OFFSET = 12f;
+    private const float MAX_FOLLOW_Y_OFFSET = 15f;
+
+    public static CameraController Instance { get; private set; }
+
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+
+    private CinemachineTransposer cinemachineTransposer;
+    private Vector3 targetFollowOffset;
+
     void Update()
     {
         HandleCameraMovement();
@@ -15,15 +22,26 @@ public class CameraController : MonoBehaviour
         HandleCameraZoom();
     }
 
+    private void Awake()
+    {
+        if(Instance != null)
+        {
+            Debug.LogError("multiple instances of CameraController");
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
     private void HandleCameraZoom()
     {
-        CinemachineTransposer cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
-        Vector3 followOffset = cinemachineTransposer.m_FollowOffset;
+        cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
+        targetFollowOffset = cinemachineTransposer.m_FollowOffset;
 
-        followOffset.y += InputManager.Instance.GetCameraZoomAmount();
-        followOffset.y = Mathf.Clamp(followOffset.y, MIN_FOLLOW_Y_OFFSET, MAX_FOLLOW_Y_OFFSET);
-        float zoomSpeed = 15f;
-        cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, followOffset, Time.deltaTime * zoomSpeed);
+        targetFollowOffset.y += InputManager.Instance.GetCameraZoomAmount();
+        targetFollowOffset.y = Mathf.Clamp(targetFollowOffset.y, MIN_FOLLOW_Y_OFFSET, MAX_FOLLOW_Y_OFFSET);
+        float zoomSpeed = 12f;
+        cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, targetFollowOffset, Time.deltaTime * zoomSpeed);
     }
 
     private void HandleCameraRotation()
@@ -46,4 +64,8 @@ public class CameraController : MonoBehaviour
         transform.position += moveVector * moveSpeed * Time.deltaTime;
     }
 
+    public float GetCameraHeight()
+    {
+        return targetFollowOffset.y;
+    }
 }
