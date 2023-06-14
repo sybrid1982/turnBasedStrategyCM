@@ -23,6 +23,7 @@ public class Unit : MonoBehaviour
 
     private void Awake() 
     {
+        actionPoints = maxActionPoints;
         baseActions = GetComponents<BaseAction>();
         healthSystem = GetComponent<HealthSystem>();
     }

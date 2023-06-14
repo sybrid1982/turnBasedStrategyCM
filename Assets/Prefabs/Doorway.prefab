@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 705746752783549851}
   - component: {fileID: 1824020710046843843}
   - component: {fileID: 1918827114446110233}
+  - component: {fileID: -2696920080178705066}
   m_Layer: 0
   m_Name: Doorway
   m_TagString: Untagged
@@ -83,3 +84,15 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-2696920080178705066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4728457217293491189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8deb4f3308dc4784c8a4adc745d1d1d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

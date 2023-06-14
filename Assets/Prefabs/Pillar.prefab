@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 789884132085106673}
   - component: {fileID: 5987570128501545688}
   - component: {fileID: 3442097251124262962}
+  - component: {fileID: -4901134147029185513}
   m_Layer: 8
   m_Name: Pillar
   m_TagString: Untagged
@@ -106,3 +107,15 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 4300000, guid: 9a70db0102eed3c468687c669df871fb, type: 3}
+--- !u!114 &-4901134147029185513
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2478878104169459096}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8deb4f3308dc4784c8a4adc745d1d1d9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
