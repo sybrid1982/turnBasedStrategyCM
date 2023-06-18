@@ -19,6 +19,59 @@ public class GrenadeProjectile : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        MoveGrenade();
+
+        float closeEnoughDistance = 0.2f;
+        if (GrenadeNearTargetPosition(closeEnoughDistance))
+        {
+            BlowUpGrenade();
+        }
+    }
+
+    private void BlowUpGrenade()
+    {
+        float damageRadius = 4f;
+        Collider[] colliderArray = Physics.OverlapSphere(targetPosition, damageRadius);
+
+        foreach (Collider collider in colliderArray)
+        {
+            TryDamageUnit(collider);
+            TryDamageCrate(collider);
+        }
+
+        OnAnyGrenadeExploded?.Invoke(this, EventArgs.Empty);
+
+        trailRenderer.transform.parent = null;
+
+        Instantiate(grenadeExplodeVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
+        Destroy(gameObject);
+
+        onGrenadeBehaviorComplete();
+    }
+
+    private void TryDamageCrate(Collider collider)
+    {
+        if (collider.TryGetComponent<DestructibleCrate>(out DestructibleCrate crate))
+        {
+            crate.Damage();
+        }
+    }
+
+    private void TryDamageUnit(Collider collider)
+    {
+        if (collider.TryGetComponent<Unit>(out Unit targetUnit))
+        {
+            targetUnit.Damage(30, transform.position, 2000f);
+        }
+    }
+
+    private bool GrenadeNearTargetPosition(float closeEnoughDistance)
+    {
+        return Vector3.Distance(positionXZ, targetPosition) < closeEnoughDistance;
+    }
+
+    private void MoveGrenade()
+    {
         Vector3 moveDirection = (targetPosition - positionXZ).normalized;
 
         float moveSpeed = 15f;
@@ -30,33 +83,6 @@ public class GrenadeProjectile : MonoBehaviour
         float maxHeight = totalDistance / 4f;
         float positionY = arcYAnimationCurve.Evaluate(distanceNormalized) * maxHeight;
         transform.position = new Vector3(positionXZ.x, positionY, positionXZ.z);
-
-        float closeEnoughDistance = 0.2f;
-        if (Vector3.Distance(positionXZ, targetPosition) < closeEnoughDistance)
-        {
-            float damageRadius = 4f;
-            Collider[] colliderArray = Physics.OverlapSphere(targetPosition, damageRadius);
-
-            foreach (Collider collider in colliderArray)
-            {
-                if (collider.TryGetComponent<Unit>(out Unit targetUnit))
-                {
-                    targetUnit.Damage(30, transform.position, 2000f);
-                }
-                if (collider.TryGetComponent<DestructibleCrate>(out DestructibleCrate crate))
-                {
-                    crate.Damage();
-                }
-            }
-            OnAnyGrenadeExploded?.Invoke(this, EventArgs.Empty);
-
-            trailRenderer.transform.parent = null;
-
-            Instantiate(grenadeExplodeVfxPrefab, transform.position + Vector3.up * 1f, Quaternion.identity);
-            Destroy(gameObject);
-
-            onGrenadeBehaviorComplete();
-        }
     }
 
     public void Setup(GridPosition targetGridPosition, Action onGrenadeBehaviorComplete)
