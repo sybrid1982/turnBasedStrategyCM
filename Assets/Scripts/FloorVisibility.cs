@@ -25,6 +25,14 @@ public class FloorVisibility : MonoBehaviour
         }
 
         CameraController.Instance.OnCameraZoomChange += CameraController_OnCameraZoomChange;
+        if (gameObject.TryGetComponent<DestructibleCrate>(out DestructibleCrate destructibleCrate))
+        {
+            DestructibleCrate.OnAnyDestroyed += DestructibleCrate_OnAnyDestroyed;
+        }
+        if (gameObject.TryGetComponent<Unit>(out Unit unit))
+        {
+            Unit.OnAnyUnitDied += Unit_OnAnyUnitDied;
+        }
     }
 
     private void Show()
@@ -71,6 +79,34 @@ public class FloorVisibility : MonoBehaviour
         else
         {
             Hide();
+        }
+    }
+
+    private void DestructibleCrate_OnAnyDestroyed(object sender, EventArgs e)
+    {
+        DestructibleCrate destructibleCrate = sender as DestructibleCrate;
+
+        if (destructibleCrate.TryGetComponent<FloorVisibility>(out FloorVisibility floorVis))
+        {
+            if (floorVis == this)
+            {
+                CameraController.Instance.OnCameraZoomChange -= CameraController_OnCameraZoomChange;
+                DestructibleCrate.OnAnyDestroyed -= DestructibleCrate_OnAnyDestroyed;
+            }
+        }
+    }
+
+    private void Unit_OnAnyUnitDied(object sender, EventArgs e)
+    {
+        Unit unit = sender as Unit;
+
+        if (unit.TryGetComponent<FloorVisibility>(out FloorVisibility floorVis))
+        {
+            if (floorVis == this)
+            {
+                CameraController.Instance.OnCameraZoomChange -= CameraController_OnCameraZoomChange;
+                Unit.OnAnyUnitDied -= Unit_OnAnyUnitDied;
+            }
         }
     }
 }
