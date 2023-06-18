@@ -74,4 +74,14 @@ public class UnitManager : MonoBehaviour
         return friendlyUnitList;
     }
 
+    public int GetFriendlyUnitsWithActionPointsCount()
+    {
+        return GetCountOfUnitsWithActionPointsRemaining(friendlyUnitList);
+    }
+
+    private int GetCountOfUnitsWithActionPointsRemaining(List<Unit> units)
+    {
+        List<Unit> unitsWithActionPoints = units.FindAll(unit => unit.GetActionPoints() > 0);
+        return unitsWithActionPoints.Count;
+    }
 }
