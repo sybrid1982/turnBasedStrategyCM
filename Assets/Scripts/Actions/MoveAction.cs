@@ -50,7 +50,6 @@ public class MoveAction : BaseAction
 
     private void MoveUnitToPosition(Vector3 targetPosition)
     {
-        float stoppingDistance = 0.1f;
         Vector3 moveDirection = (targetPosition - transform.position).normalized;
 
         RotateTowardsPosition(moveDirection);
@@ -85,11 +84,13 @@ public class MoveAction : BaseAction
             isChangingFloors = true;
             differentFloorsTeleportTimer = differentFloorsTeleportTimerMax;
 
+            Vector3 nextTargetPosition = targetPositions[currentPositionIndex];
+
             GridPosition unitGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
 
             OnChangedFloorsStarted?.Invoke(this, new OnChangeFloorsStartedEventArgs {
                 unitGridPosition = unitGridPosition,
-                targetGridPosition = LevelGrid.Instance.GetGridPosition(targetPosition)
+                targetGridPosition = LevelGrid.Instance.GetGridPosition(nextTargetPosition)
             });
         }
     }
@@ -97,6 +98,7 @@ public class MoveAction : BaseAction
 
     private void MoveUnitToPositionOnDifferentFloor(Vector3 targetPosition)
     {
+        Debug.Log("Moving unit to different floor in " + differentFloorsTeleportTimer + " seconds");
         differentFloorsTeleportTimer -= Time.deltaTime;
         if (differentFloorsTeleportTimer <= 0f)
         {
@@ -121,6 +123,11 @@ public class MoveAction : BaseAction
         Vector3 targetPosition = targetPositions[currentPositionIndex];
         GridPosition targetGridPosition = LevelGrid.Instance.GetGridPosition(targetPosition);
         GridPosition unitGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
+
+        Debug.Log("Target floor: " + targetGridPosition.floor + "; Unit floor: " + unitGridPosition.floor);
+        
+        bool nextMoveIsJumpOrFall = targetGridPosition.floor != unitGridPosition.floor;
+        Debug.Log("Next move is jump or fall:" + nextMoveIsJumpOrFall);
 
         return targetGridPosition.floor != unitGridPosition.floor;
     }

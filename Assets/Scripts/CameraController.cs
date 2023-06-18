@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,6 +10,8 @@ public class CameraController : MonoBehaviour
     private const float MAX_FOLLOW_Y_OFFSET = 15f;
 
     public static CameraController Instance { get; private set; }
+
+    public event EventHandler OnCameraZoomChange;
 
     [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
 
@@ -33,13 +36,21 @@ public class CameraController : MonoBehaviour
         Instance = this;
     }
 
-    private void HandleCameraZoom()
+    private void Start()
     {
         cinemachineTransposer = cinemachineVirtualCamera.GetCinemachineComponent<CinemachineTransposer>();
         targetFollowOffset = cinemachineTransposer.m_FollowOffset;
+    }
 
-        targetFollowOffset.y += InputManager.Instance.GetCameraZoomAmount();
-        targetFollowOffset.y = Mathf.Clamp(targetFollowOffset.y, MIN_FOLLOW_Y_OFFSET, MAX_FOLLOW_Y_OFFSET);
+    private void HandleCameraZoom()
+    {
+        float previousTargetZoom = targetFollowOffset.y;
+
+        if (InputManager.Instance.GetCameraZoomAmount() != 0) {
+            float zoomAmount = cinemachineTransposer.m_FollowOffset.y + InputManager.Instance.GetCameraZoomAmount();
+            SetTargetZoomAmount(zoomAmount);
+        }
+
         float zoomSpeed = 12f;
         cinemachineTransposer.m_FollowOffset = Vector3.Lerp(cinemachineTransposer.m_FollowOffset, targetFollowOffset, Time.deltaTime * zoomSpeed);
     }
@@ -67,5 +78,12 @@ public class CameraController : MonoBehaviour
     public float GetCameraHeight()
     {
         return targetFollowOffset.y;
+    }
+
+    public void SetTargetZoomAmount(float zoomHeight)
+    {
+        targetFollowOffset.y = zoomHeight;
+        targetFollowOffset.y = Mathf.Clamp(targetFollowOffset.y, MIN_FOLLOW_Y_OFFSET, MAX_FOLLOW_Y_OFFSET);
+        OnCameraZoomChange?.Invoke(this, EventArgs.Empty);
     }
 }

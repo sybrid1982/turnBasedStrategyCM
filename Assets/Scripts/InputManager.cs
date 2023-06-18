@@ -103,4 +103,13 @@ public class InputManager : MonoBehaviour
         return 0f;
 #endif
     }
+
+    public bool GetJumpToNextUnit()
+    {
+#if USE_NEW_INPUT_SYSTEM
+        return playerInputActions.Player.GetNextUnit.WasPressedThisFrame();
+#else
+        return (Input.GetKey(KeyCode.Tab))
+#endif
+    }
 }

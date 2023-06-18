@@ -2,14 +2,22 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Cinemachine;
 
 public class CameraManager : MonoBehaviour
 {
     [SerializeField] private GameObject actionCameraGameObject;
+    [SerializeField] private CinemachineVirtualCamera cinemachineVirtualCamera;
+    [SerializeField] private Transform cameraControllerTransform;
+
+    private CinemachineVirtualCamera actionCameraVirtualCamera;
 
     private void Start() {
         BaseAction.OnAnyActionStarted += BaseAction_OnAnyActionStarted;
         BaseAction.OnAnyActionCompleted += BaseAction_OnAnyActionCompleted;
+        UnitActionSystem.Instance.OnSelectedUnitChange += UnitActionSystem_OnSelectedUnitChange;
+
+        actionCameraVirtualCamera = actionCameraGameObject.GetComponent<CinemachineVirtualCamera>();
     }
     private void ShowActionCamera()
     {
@@ -30,11 +38,20 @@ public class CameraManager : MonoBehaviour
 
                 ShowActionCamera();
                 break;
+            case MoveAction moveAction:
+                PositionCameraForMoveAction(moveAction);
+
+                ShowActionCamera();
+                break;
         }
     }
 
     private void PositionCameraForShootAction(ShootAction shootAction)
     {
+
+        actionCameraVirtualCamera.LookAt = null;
+        actionCameraVirtualCamera.Follow = null;
+
         Unit shooterUnit = shootAction.GetUnit();
         Unit targetUnit = shootAction.GetTargetUnit();
         Vector3 cameraCharacterHeight = Vector3.up * 1.7f;
@@ -48,6 +65,16 @@ public class CameraManager : MonoBehaviour
         actionCameraGameObject.transform.LookAt(targetUnit.GetWorldPosition() + cameraCharacterHeight);
     }
 
+    private void PositionCameraForMoveAction(MoveAction moveAction)
+    {
+        Unit movingUnit = moveAction.GetUnit();
+        Vector3 cameraMoveHeight = Vector3.up * 15f;
+        actionCameraGameObject.transform.position = movingUnit.GetWorldPosition() + cameraMoveHeight;
+
+        actionCameraVirtualCamera.LookAt = movingUnit.transform;
+        actionCameraVirtualCamera.Follow = movingUnit.transform;
+    }
+
     private void BaseAction_OnAnyActionCompleted(object sender, EventArgs e)
     {
         switch (sender)
@@ -56,5 +83,22 @@ public class CameraManager : MonoBehaviour
                 HideActionCamera();
                 break;
         }
+        switch (sender)
+        {
+            case MoveAction moveAction:
+                HideActionCamera();
+                break;
+        }
+    }
+
+    private void UnitActionSystem_OnSelectedUnitChange(object sender, Unit unit) 
+    {
+        Vector3 cameraTargetFocusPosition = UnitActionSystem.Instance.GetSelectedUnit().GetWorldPosition();
+        cameraTargetFocusPosition.y = 0;
+        cameraControllerTransform.position = cameraTargetFocusPosition;
+        float zoomOffset = 5.0f;
+        float zoomHeight = unit.GetWorldPosition().y + zoomOffset;
+        CameraController cameraController = cameraControllerTransform.GetComponent<CameraController>();
+        cameraController.SetTargetZoomAmount(zoomHeight);
     }
 }

@@ -8,7 +8,7 @@ public class UnitActionSystem : MonoBehaviour
 {
     public static UnitActionSystem Instance { get; private set; }
 
-    public event EventHandler OnSelectedUnitChange;
+    public event EventHandler<Unit> OnSelectedUnitChange;
     public event EventHandler OnSelectedActionChange;
     public event EventHandler<bool> OnBusyChanged;
     public event EventHandler OnActionStarted;
@@ -61,6 +61,20 @@ public class UnitActionSystem : MonoBehaviour
                 return;
             }
         }
+        if (InputManager.Instance.GetJumpToNextUnit()) {
+            List<Unit> playerUnitList = UnitManager.Instance.GetFriendlyUnitList();
+            if (playerUnitList.Count == 0)
+            {
+                return;
+            }
+            int currentUnitIndex = playerUnitList.FindIndex((unit) => unit.GetWorldPosition() == selectedUnit.GetWorldPosition());
+            if (currentUnitIndex < playerUnitList.Count - 1) {
+                SetSelectedUnit(playerUnitList[currentUnitIndex + 1]);
+            } else {
+                SetSelectedUnit(playerUnitList[0]);
+            }
+        }
+
         if(TryHandleUnitSelection())
         {
             return;
@@ -128,7 +142,7 @@ public class UnitActionSystem : MonoBehaviour
     private void SetSelectedUnit(Unit unit) {
         selectedUnit = unit;
         SetSelectedAction(unit.GetAction<MoveAction>());
-        OnSelectedUnitChange?.Invoke(this, EventArgs.Empty);
+        OnSelectedUnitChange?.Invoke(this, selectedUnit);    // Instead send the selected unit so the camera can adjust its height
     }
 
     public void SetSelectedAction(BaseAction baseAction)

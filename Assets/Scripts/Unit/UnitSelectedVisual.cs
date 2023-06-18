@@ -20,7 +20,7 @@ public class UnitSelectedVisual : MonoBehaviour
         UpdateVisual();
     }
 
-    private void UnitActionSystem_OnSelectedUnitChanged(object sender, EventArgs empty)
+    private void UnitActionSystem_OnSelectedUnitChanged(object sender, Unit unit)
     {
         UpdateVisual();
     }

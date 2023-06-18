@@ -47,7 +47,7 @@ public class UnitActionSystemUI : MonoBehaviour
         }
     }
 
-    private void UnitActionSystem_OnSelectedUnitChange(object sender, EventArgs e)
+    private void UnitActionSystem_OnSelectedUnitChange(object sender, Unit unit)
     {
         CreateUnitActionButtons();
         UpdateSelectedVisual();

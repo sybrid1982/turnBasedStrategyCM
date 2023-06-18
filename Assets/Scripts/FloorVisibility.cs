@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,28 +23,8 @@ public class FloorVisibility : MonoBehaviour
         {
             Destroy(this);
         }
-    }
 
-    private void Update()
-    {
-        if (dynamicFloorPosition)
-        {
-            floor = LevelGrid.Instance.GetFloor(transform.position);
-        }
-
-        float cameraHeight = CameraController.Instance.GetCameraHeight();
-
-        float floorHeightOffset = 4f;
-        bool showObject = cameraHeight > LevelGrid.FLOOR_HEIGHT * floor + floorHeightOffset;
-
-        if (showObject || floor == 0)
-        {
-            Show();
-        }
-        else
-        {
-            Hide();
-        }
+        CameraController.Instance.OnCameraZoomChange += CameraController_OnCameraZoomChange;
     }
 
     private void Show()
@@ -68,6 +49,28 @@ public class FloorVisibility : MonoBehaviour
             }
 
             renderer.enabled = false;
+        }
+    }
+
+    private void CameraController_OnCameraZoomChange(object sender, EventArgs e)
+    {
+        if (dynamicFloorPosition)
+        {
+            floor = LevelGrid.Instance.GetFloor(transform.position);
+        }
+
+        float cameraHeight = CameraController.Instance.GetCameraHeight();
+
+        float floorHeightOffset = 4f;
+        bool showObject = cameraHeight > LevelGrid.FLOOR_HEIGHT * floor + floorHeightOffset;
+
+        if (showObject || floor == 0)
+        {
+            Show();
+        }
+        else
+        {
+            Hide();
         }
     }
 }
