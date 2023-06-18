@@ -98,7 +98,6 @@ public class MoveAction : BaseAction
 
     private void MoveUnitToPositionOnDifferentFloor(Vector3 targetPosition)
     {
-        Debug.Log("Moving unit to different floor in " + differentFloorsTeleportTimer + " seconds");
         differentFloorsTeleportTimer -= Time.deltaTime;
         if (differentFloorsTeleportTimer <= 0f)
         {
@@ -124,10 +123,7 @@ public class MoveAction : BaseAction
         GridPosition targetGridPosition = LevelGrid.Instance.GetGridPosition(targetPosition);
         GridPosition unitGridPosition = LevelGrid.Instance.GetGridPosition(transform.position);
 
-        Debug.Log("Target floor: " + targetGridPosition.floor + "; Unit floor: " + unitGridPosition.floor);
-        
         bool nextMoveIsJumpOrFall = targetGridPosition.floor != unitGridPosition.floor;
-        Debug.Log("Next move is jump or fall:" + nextMoveIsJumpOrFall);
 
         return targetGridPosition.floor != unitGridPosition.floor;
     }

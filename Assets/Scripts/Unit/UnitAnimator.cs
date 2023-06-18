@@ -56,8 +56,6 @@ public class UnitAnimator : MonoBehaviour
 
     private void MoveAction_OnChangedFloorStarted(object sender, MoveAction.OnChangeFloorsStartedEventArgs e)
     {
-        Debug.Log("MoveAction_OnChangedFloorStarted in unit animator");
-        Debug.Log("unit floor is " + e.unitGridPosition.floor + " and target floor is " + e.targetGridPosition.floor);
         if (e.targetGridPosition.floor > e.unitGridPosition.floor)
         {
             animator.SetTrigger("JumpUp");
